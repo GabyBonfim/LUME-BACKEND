@@ -1,16 +1,29 @@
-# Use the Eclipse temurin alpine official image
-# https://hub.docker.com/_/eclipse-temurin
-FROM eclipse-temurin:21-jdk-alpine
+# Usa imagem oficial com Maven + JDK 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Create and change to the app directory.
+# Diretório da aplicação
 WORKDIR /app
 
-# Copy local code to the container image.
-COPY . ./
+# Copia o pom.xml
+COPY pom.xml .
 
-# Build the app.
-RUN chmod +x mvnw
-RUN ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean dependency:list install
+# Copia o código-fonte
+COPY src ./src
 
-# Run the quarkus app 
-CMD ["sh", "-c", "java -jar target/quarkus-app/quarkus-run.jar"]
+# Builda o projeto sem mvnw
+RUN mvn -B -DskipTests clean package
+
+# ------------------------------
+# Imagem final para rodar o app
+# ------------------------------
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+# Copia o JAR gerado
+COPY --from=build /app/target/quarkus-app ./quarkus-app/
+COPY --from=build /app/target/quarkus-run.jar .
+
+EXPOSE 8080
+
+CMD ["java", "-jar", "quarkus-run.jar"]
