@@ -40,21 +40,23 @@ public class TesteDAO {
         return "✅ Teste gerado e salvo com sucesso!";
     }
 
-
     // =============================
     // DELETE
     // =============================
     public String deletar(int id) throws SQLException, ClassNotFoundException {
         try (Connection conn = new ConexaoFactory().conexao()) {
 
-            // 1) remover relações entre colaborador e teste
-            String sqlRelacionamento = "DELETE FROM TESTE_ATRIBUIDO WHERE ID_TESTE = ?";
+            // Remove vínculo antes
+            String sqlRelacionamento = """
+                DELETE FROM TESTE_ATRIBUIDO WHERE ID_TESTE = ?
+            """;
+
             try (PreparedStatement stmtRel = conn.prepareStatement(sqlRelacionamento)) {
                 stmtRel.setInt(1, id);
                 stmtRel.executeUpdate();
             }
 
-            // 2) deletar teste
+            // Deleta teste
             String sql = "DELETE FROM TESTE WHERE ID = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setInt(1, id);
@@ -64,7 +66,6 @@ public class TesteDAO {
 
         return "🗑️ Teste deletado com sucesso!";
     }
-
 
     // =============================
     // UPDATE
@@ -87,9 +88,8 @@ public class TesteDAO {
             }
         }
 
-        return "♻️ Teste atualizado com sucesso!";
+        return "♻ Teste atualizado com sucesso!";
     }
-
 
     // =============================
     // SELECT - listar todos testes
@@ -122,9 +122,40 @@ public class TesteDAO {
         return lista;
     }
 
+    // =============================
+    // Buscar teste por ID
+    // =============================
+    public Teste buscarPorId(int id) throws SQLException, ClassNotFoundException {
+
+        String sql = """
+            SELECT ID, TITULO, CONTEUDO, CRIADO_EM
+            FROM TESTE
+            WHERE ID = ?
+        """;
+
+        try (Connection conn = new ConexaoFactory().conexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                if (rs.next()) {
+                    Teste t = new Teste();
+                    t.setId(rs.getInt("ID"));
+                    t.setTitulo(rs.getString("TITULO"));
+                    t.setConteudo(rs.getString("CONTEUDO"));
+                    t.setCriadoEm(rs.getString("CRIADO_EM"));
+                    return t;
+                }
+            }
+        }
+
+        return null;
+    }
 
     // =======================================================
-    // 🔵 NOVO: ADMIN — ATRIBUIR TESTE A UM COLABORADOR
+    // ATRIBUIR TESTE A UM COLABORADOR
     // =======================================================
     public String atribuirTeste(int idColaborador, int idTeste)
             throws SQLException, ClassNotFoundException {
@@ -146,9 +177,8 @@ public class TesteDAO {
         return "📌 Teste atribuído ao colaborador!";
     }
 
-
     // =======================================================
-    // 🔵 NOVO: ADMIN — LISTAR TESTES ATRIBUÍDOS A UM COLABORADOR
+    // LISTAR TESTES DO COLABORADOR (CORRIGIDO!)
     // =======================================================
     public ArrayList<Teste> listarTestesDoColaborador(int idColaborador)
             throws SQLException, ClassNotFoundException {

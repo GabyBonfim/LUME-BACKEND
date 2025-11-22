@@ -6,6 +6,7 @@ import br.com.fiap.dao.TesteDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+
 /**
  * Camada de serviço: regra de negócio para Testes.
  * Não acessa HTTP nem JDBC direto, só usa outros serviços/DAOs.
@@ -54,4 +55,9 @@ public class TesteService {
     public String deletar(int id) throws SQLException, ClassNotFoundException {
         return testeDAO.deletar(id);
     }
+
+    public Teste buscarPorId(int id) throws SQLException, ClassNotFoundException {
+        return testeDAO.buscarPorId(id);
+    }
+
 }
