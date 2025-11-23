@@ -10,21 +10,21 @@ import java.net.http.HttpResponse;
 
 public class GeminiService {
 
-    private static final String API_KEY =
-            System.getenv("GEMINI_KEY") != null
-                    ? System.getenv("GEMINI_KEY")
-                    : "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
+    // API KEY fornecida
+    private static final String API_KEY = "AIzaSyDgsD97cQhIaG-GKOsFPaVTySlQA-PxHn4";
 
-    // MODELO OFICIAL GRATUITO
+    // Endpoint atualizado para o modelo 2.5-flash
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
-
+    // ============================================================
+    // PROMPT BASE – Moldura para TODAS as respostas da LUM.IA
+    // ============================================================
     private static final String PROMPT_MOLDURA = """
-             Você é a LUM.IA, a inteligência da plataforma LUME, uma plataforma online que gera 
+            Você é a LUM.IA, a inteligência da plataforma LUME, uma plataforma online que gera 
             testes que treinam soft skills de colaboradores. 
             
             Quando te perguntarem sobre quais testes temos diponiveis ou se você pode gerar,
@@ -70,28 +70,41 @@ public class GeminiService {
             """;
 
 
+    // ============================================================
+    // GERAR TESTE
+    // ============================================================
     public String gerarConteudoTeste(String tema, int quantidade) throws Exception {
 
         String prompt = """
-                Gere um teste sobre "%s" com %d questões.
-                Formato objetivo, alternativas A-D, destaque a correta.
+                Você é a LUM.IA, inteligência da plataforma LUME.
+                Gere um teste sobre o tema: "%s".
+                Crie exatamente %d questões objetivas (A, B, C, D).
+                Destaque a alternativa correta com "**CORRETA:**".
+
+                Use formatação em Markdown para manter visual profissional.
                 """.formatted(tema, quantidade);
 
         return enviarParaGemini(prompt);
     }
 
 
+    // ============================================================
+    // CHAT (usa moldura)
+    // ============================================================
     public String conversar(String mensagem) throws Exception {
 
-        String promptFinal =
-                PROMPT_MOLDURA +
-                "\n\nMensagem do usuário:\n" +
+        String promptFinal = PROMPT_MOLDURA + "\n\n" +
+                "Agora responda à mensagem do usuário abaixo usando esse formato:\n\n" +
+                "Mensagem do Usuário:\n" +
                 mensagem;
 
         return enviarParaGemini(promptFinal);
     }
 
 
+    // ============================================================
+    // FUNÇÃO CENTRAL – envio ao Gemini 2.5-flash
+    // ============================================================
     private String enviarParaGemini(String texto) throws Exception {
 
         if (API_KEY == null || API_KEY.isBlank()) {
@@ -121,7 +134,7 @@ public class GeminiService {
 
         if (resp.statusCode() != 200) {
             throw new RuntimeException(
-                    "Erro da API Gemini (" + resp.statusCode() + "):\n" + resp.body()
+                    "Erro da API Gemini (" + resp.statusCode() + "): " + resp.body()
             );
         }
 
@@ -129,11 +142,12 @@ public class GeminiService {
 
         JsonNode textNode = json
                 .path("candidates").path(0)
-                .path("content").path("parts").path(0)
+                .path("content")
+                .path("parts").path(0)
                 .path("text");
 
         if (textNode.isMissingNode()) {
-            throw new RuntimeException("Resposta inesperada da Gemini:\n" + resp.body());
+            throw new RuntimeException("Resposta inesperada da Gemini: " + resp.body());
         }
 
         return textNode.asText();
