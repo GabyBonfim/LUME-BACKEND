@@ -10,31 +10,35 @@ import java.net.http.HttpResponse;
 
 public class GeminiService {
 
-    // Usa variável de ambiente ou key fixa
     private static final String API_KEY =
-            System.getenv("GEMINI_KEY") != null ?
-                    System.getenv("GEMINI_KEY") :
-                    "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
+            System.getenv("GEMINI_KEY") != null
+                    ? System.getenv("GEMINI_KEY")
+                    : "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
 
-    // MODELO GRATUITO + CORRETO
+    // MODELO OFICIAL GRATUITO
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=";
+            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    // PROMPT PADRÃO
     private static final String PROMPT_MOLDURA = """
-            Você é a LUM.IA, a inteligência da plataforma LUME,
-            especializada em criar e analisar testes de soft skills.
+             Você é a LUM.IA, a inteligência da plataforma LUME, uma plataforma online que gera 
+            testes que treinam soft skills de colaboradores. 
+            
+            Quando te perguntarem sobre quais testes temos diponiveis ou se você pode gerar,
+            você deve questionar o nome e ID do colobaorador, seguimento da empresa, o setor 
+            e uma função especifica desse colaborador e gerar um teste com base nisso. 
+            Os testes devem ser divertidos e práticos.
 
-            Sempre responda no formato:
+            IMPORTANTE:
+            Sempre responda seguindo EXATAMENTE este formato, usando Markdown bonito:
 
             # 🎯 {Título Principal}
 
             ## 📌 Contexto
-            {2–4 linhas}
+            {Explique em 2–4 linhas o cenário de forma clara, organizada e objetiva.}
 
             ## 🧩 O teste
             - Insight 1
@@ -47,46 +51,50 @@ public class GeminiService {
             3. Ação 3
 
             ## 📊 Insight Final
-            {Conclusão curta}
+            {Conclusão curta, direta e útil.}
 
-            Use Markdown elegante e profissional.
+            Mantenha:
+            - clareza
+            - espaçamentos
+            - bullets
+            - negritos
+            - emojis corporativos discretos
+            - visual padronizado e elegante da LUME.
+            
+            IMPORTANTE: 
+            Quando você receber um teste já respondido por um colaborador, deve gerar uma 
+            analise e solicitar que o colaborador a adiciona na aba "minhas analises".
+            
+            Deve também guardar essa analise e quando o gestor/ADM solicitar, indicar com base no ID
+            do colaborador seguido da analise gerada.
             """;
 
 
-    // ============================
-    // CHAT LUM.IA
-    // ============================
-    public String conversar(String mensagem) throws Exception {
-
-        String promptFinal = PROMPT_MOLDURA +
-                "\n\nMensagem do usuário:\n" + mensagem;
-
-        return enviarParaGemini(promptFinal);
-    }
-
-
-    // ============================
-    // GERAR TESTE
-    // ============================
     public String gerarConteudoTeste(String tema, int quantidade) throws Exception {
 
         String prompt = """
-                Gere um teste sobre o tema "%s".
-                Crie %d questões objetivas (A, B, C, D)
-                e marque a correta com **CORRETA:**.
-                Use Markdown.
+                Gere um teste sobre "%s" com %d questões.
+                Formato objetivo, alternativas A-D, destaque a correta.
                 """.formatted(tema, quantidade);
 
         return enviarParaGemini(prompt);
     }
 
 
-    // ============================
-    // ENVIO REAL PARA A API
-    // ============================
+    public String conversar(String mensagem) throws Exception {
+
+        String promptFinal =
+                PROMPT_MOLDURA +
+                "\n\nMensagem do usuário:\n" +
+                mensagem;
+
+        return enviarParaGemini(promptFinal);
+    }
+
+
     private String enviarParaGemini(String texto) throws Exception {
 
-        if (API_KEY.isBlank()) {
+        if (API_KEY == null || API_KEY.isBlank()) {
             throw new RuntimeException("API KEY da Gemini não configurada.");
         }
 
@@ -125,7 +133,7 @@ public class GeminiService {
                 .path("text");
 
         if (textNode.isMissingNode()) {
-            throw new RuntimeException("Resposta inesperada: " + resp.body());
+            throw new RuntimeException("Resposta inesperada da Gemini:\n" + resp.body());
         }
 
         return textNode.asText();
