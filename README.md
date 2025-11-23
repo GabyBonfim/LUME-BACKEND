@@ -1,67 +1,193 @@
-# lume
+# 🌟 LUME – Plataforma Inteligente de Desenvolvimento de Soft Skills
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+A **LUME** é uma plataforma corporativa criada para apoiar colaboradores e gestores no desenvolvimento de **soft skills**, oferecendo testes, feedbacks inteligentes e acompanhamento por meio da assistente virtual **LUM.IA**.  
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+O projeto integra **Front-end em React + Vite** e **Back-end em Java (Spring Boot)**, seguindo boas práticas de arquitetura, DDD, modelagem de dados e experiência do usuário.
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
+## 👥 Desenvolvedores
 
-```shell script
-./mvnw quarkus:dev
+| Nome | RM | Função |
+|------|------|--------|
+| **Gabriely Bonfim Silva** | RM566242 | Front-end, Back-end, UI/UX, integração com API |
+| **Mirelly Sousa Alves** | RM566299 | Back-end, lógica de negócio, LUM.IA e modelagem de domínio |
+| **Henrique Sousa Vespasiano** | RM562917 | Banco de dados, DDD, testes e regras de negócio, Aplicações em PY |
+
+---
+
+## 📌 Sobre o Projeto
+
+A LUME foi desenvolvida com o objetivo de **automatizar e padronizar processos de desenvolvimento humano dentro das empresas**, oferecendo:
+
+- Gestão completa de colaboradores  
+- Atribuição e realização de testes  
+- Geração de feedbacks inteligentes  
+- Chat com IA integrada  
+- Painéis administrativos e operacionais  
+- Histórico de respostas e acompanhamento evolutivo  
+
+A interface foi pensada para ser **leve, acessível, responsiva e intuitiva**, utilizando design moderno em tons suaves de verde e bege.
+
+---
+
+## 🛠️ Arquitetura da Solução
+
+### 🎨 Front-end (React + Vite + TypeScript)
+- React 19  
+- Vite  
+- TailwindCSS  
+- React Router DOM  
+- Componentização e reaproveitamento  
+- Requisições assíncronas para API  
+- Páginas:
+  - Homepage  
+  - Login  
+  - Perfil do Colaborador  
+  - Painel Administrativo  
+  - Lista de Testes  
+  - Detalhes do Teste  
+  - Sobre Nós  
+
+---
+
+### ☕ Back-end (Java + Spring Boot)
+- Java 17  
+- Spring Boot  
+- Controllers REST  
+- Services com regras de negócio  
+- Repository + JPA  
+- DDD (Domain Driven Design)  
+- Banco MySQL / H2  
+- Entidades:
+  - Colaborador  
+  - Teste  
+  - Feedback  
+
+---
+
+## 🗂️ Banco de Dados – Modelo Resumido
+
+### **COLABORADOR**
+- id  
+- nome  
+- email  
+- telefone  
+- dataNascimento  
+- numero  
+- testes (1:N)
+
+### **TESTE**
+- id  
+- titulo  
+- conteudo  
+- criadoEm  
+- status  
+- colaborador_id  
+
+### **FEEDBACK**
+- id  
+- conteudo  
+- criadoEm  
+- teste_id  
+
+---
+
+## 📡 Endpoints da API
+
+| Método | Rota | Descrição |
+|--------|-------|-----------|
+| GET | `/colaboradores` | Lista todos os colaboradores |
+| POST | `/colaboradores` | Cria um novo colaborador |
+| GET | `/testes` | Lista todos os testes disponíveis |
+| POST | `/colaboradores/{id}/teste/{idTeste}` | Atribui um teste a um colaborador |
+| GET | `/testes/{id}` | Retorna detalhes do teste |
+| POST | `/feedback/{idTeste}` | Adiciona feedback a um teste |
+
+---
+
+## 🌐 Links do Projeto
+
+🔗 **Frontend (Vercel):** _adicionar aqui_  
+🔗 **Backend (Render):** _adicionar aqui_  
+🎥 **Vídeo de Demonstração (YouTube):** _adicionar aqui_  
+
+_(Me envie os links e eu coloco aqui formatado!)_
+
+---
+
+## 🚀 Como rodar o projeto localmente
+
+### 🔧 Back-end (Java)
+
+```bash
+cd lume-backend
+mvn spring-boot:run
+
+cd lume-frontend
+npm install
+npm run dev
+
 ```
+Acessar API:
+👉 http://localhost:8080
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+### Front end (REACT)
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```bash
+cd lume-frontend
+npm install
+npm run dev
 ```
+Acessar aplicação:
+👉 http://localhost:5173
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## 🌱 Principais Funcionalidades
+### 👤 Colaboradores
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+Visualizar suas informações
 
-If you want to build an _über-jar_, execute the following command:
+Ver testes pendentes
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+Realizar testes
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Consultar histórico de feedbacks
 
-## Creating a native executable
+Conversar com a LUM.IA
 
-You can create a native executable using:
+### 🛠️ Administradores
 
-```shell script
-./mvnw package -Dnative
-```
+Criar, editar e remover colaboradores
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Atribuir testes individualmente
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+Acompanhar evoluções
 
-You can then execute your native executable with: `./target/lume-1.0.0-SNAPSHOT-runner`
+Acessar conversas e feedbacks
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+Monitorar o andamento dos testes
 
-## Related Guides
+### 🧠 Assistente Inteligente – LUM.IA
 
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- JDBC Driver - Oracle ([guide](https://quarkus.io/guides/datasource)): Connect to the Oracle database via JDBC
+A LUM.IA é capaz de:
 
-## Provided Code
+Responder dúvidas
 
-### REST
+Gerar feedbacks personalizados
 
-Easily start your REST Web Services
+Registrar conversas
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Acompanhar o progresso do colaborador
+
+Facilitar a comunicação entre equipe e gestão
+
+# 🧾 Conclusão
+
+A LUME representa uma solução inovadora e acessível para empresas que desejam investir no desenvolvimento pessoal e profissional de seus colaboradores.
+Combinando tecnologia, inteligência artificial e um design amigável, o projeto demonstra maturidade técnica, organização e visão de futuro.
+
+A plataforma está pronta para evoluir, podendo receber novas funcionalidades como dashboards avançados, gamificação e relatórios automáticos.
+
+# ✨ Obrigado por visitar o projeto LUME!
+
+
