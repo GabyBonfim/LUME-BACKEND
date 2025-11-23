@@ -17,7 +17,7 @@ public class GeminiService {
                     "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
 
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
+            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -137,7 +137,7 @@ public class GeminiService {
 
         if (resp.statusCode() != 200) {
             throw new RuntimeException(
-                    "Erro da API Gemini (" + resp.statusCode() + "): " + resp.body()
+                    "Erro da API Gemini (" + resp.statusCode() + "):\n" + resp.body()
             );
         }
 
