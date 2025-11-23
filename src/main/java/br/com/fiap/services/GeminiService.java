@@ -10,31 +10,31 @@ import java.net.http.HttpResponse;
 
 public class GeminiService {
 
-    // Usa variável de ambiente ou a key fixa
+    // Usa variável de ambiente ou key fixa
     private static final String API_KEY =
-            System.getenv("GEMINI_KEY") != null
-                    ? System.getenv("GEMINI_KEY")
-                    : "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
+            System.getenv("GEMINI_KEY") != null ?
+                    System.getenv("GEMINI_KEY") :
+                    "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
 
-    // MODELO CORRETO — 100% gratuito e suportado
+    // MODELO GRATUITO + CORRETO
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
 
-    // PROMPT PADRÃO DA LUM.IA
+    // PROMPT PADRÃO
     private static final String PROMPT_MOLDURA = """
-            Você é a LUM.IA, a inteligência da plataforma LUME, uma plataforma online que gera 
-            testes que treinam soft skills de colaboradores. 
-            
-            Sempre responda seguindo este formato elegante em Markdown:
+            Você é a LUM.IA, a inteligência da plataforma LUME,
+            especializada em criar e analisar testes de soft skills.
+
+            Sempre responda no formato:
 
             # 🎯 {Título Principal}
 
             ## 📌 Contexto
-            {Explique em 2–4 linhas.}
+            {2–4 linhas}
 
             ## 🧩 O teste
             - Insight 1
@@ -47,22 +47,33 @@ public class GeminiService {
             3. Ação 3
 
             ## 📊 Insight Final
-            {Conclusão curta.}
+            {Conclusão curta}
 
-            Emojis corporativos discretos, estrutura limpa e organizada.
+            Use Markdown elegante e profissional.
             """;
 
 
-    // ===========================================
+    // ============================
+    // CHAT LUM.IA
+    // ============================
+    public String conversar(String mensagem) throws Exception {
+
+        String promptFinal = PROMPT_MOLDURA +
+                "\n\nMensagem do usuário:\n" + mensagem;
+
+        return enviarParaGemini(promptFinal);
+    }
+
+
+    // ============================
     // GERAR TESTE
-    // ===========================================
+    // ============================
     public String gerarConteudoTeste(String tema, int quantidade) throws Exception {
 
         String prompt = """
-                Gere um teste sobre o tema: "%s".
-                Crie exatamente %d questões objetivas (A, B, C, D).
-                Destaque a alternativa correta com **CORRETA:**.
-                
+                Gere um teste sobre o tema "%s".
+                Crie %d questões objetivas (A, B, C, D)
+                e marque a correta com **CORRETA:**.
                 Use Markdown.
                 """.formatted(tema, quantidade);
 
@@ -70,25 +81,12 @@ public class GeminiService {
     }
 
 
-    // ===========================================
-    // CHAT
-    // ===========================================
-    public String conversar(String mensagem) throws Exception {
-
-        String promptFinal = PROMPT_MOLDURA
-                + "\n\nMensagem do usuário:\n"
-                + mensagem;
-
-        return enviarParaGemini(promptFinal);
-    }
-
-
-    // ===========================================
-    // FUNÇÃO CENTRAL — ENVIA PARA A GEMINI
-    // ===========================================
+    // ============================
+    // ENVIO REAL PARA A API
+    // ============================
     private String enviarParaGemini(String texto) throws Exception {
 
-        if (API_KEY == null || API_KEY.isBlank()) {
+        if (API_KEY.isBlank()) {
             throw new RuntimeException("API KEY da Gemini não configurada.");
         }
 
@@ -123,12 +121,11 @@ public class GeminiService {
 
         JsonNode textNode = json
                 .path("candidates").path(0)
-                .path("content")
-                .path("parts").path(0)
+                .path("content").path("parts").path(0)
                 .path("text");
 
         if (textNode.isMissingNode()) {
-            throw new RuntimeException("Resposta inesperada da Gemini: " + resp.body());
+            throw new RuntimeException("Resposta inesperada: " + resp.body());
         }
 
         return textNode.asText();
