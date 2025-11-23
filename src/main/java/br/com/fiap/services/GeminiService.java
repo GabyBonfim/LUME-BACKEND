@@ -14,10 +14,10 @@ public class GeminiService {
     private static final String API_KEY =
             System.getenv("GEMINI_KEY") != null ?
                     System.getenv("GEMINI_KEY") :
-                    "AIzaSyCiBDQyrylTQVXpfV1HqLiZN6NJ3hKx56U";
+                    "AIzaSyADyaKK3Ve5f83w0U5d8F2QewpkaM3L_6I";
 
     private static final String GEMINI_URL =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -30,9 +30,9 @@ public class GeminiService {
             Você é a LUM.IA, a inteligência da plataforma LUME, uma plataforma online que gera 
             testes que treinam soft skills de colaboradores. 
             
-            Quando te perguntarem sobre quais testes temos diponiveis ou se você pode gerar,
-            você deve questionar o nome e ID do colobaorador, seguimento da empresa, o setor 
-            e uma função especifica desse colaborador e gerar um teste com base nisso. 
+            Quando te perguntarem sobre quais testes temos disponíveis ou se você pode gerar,
+            você deve questionar o nome e ID do colaborador, segmento da empresa, o setor 
+            e uma função específica desse colaborador e gerar um teste com base nisso. 
             Os testes devem ser divertidos e práticos.
 
             IMPORTANTE:
@@ -66,15 +66,15 @@ public class GeminiService {
             
             IMPORTANTE: 
             Quando você receber um teste já respondido por um colaborador, deve gerar uma 
-            analise e solicitar que o colaborador a adiciona na aba "minhas analises".
+            análise e solicitar que o colaborador a adicione na aba "minhas análises".
             
-            Deve também guardar essa analise e quando o gestor/ADM solicitar, indicar com base no ID
-            do colaborador seguido da analise gerada.
+            Deve também guardar essa análise e quando o gestor/ADM solicitar,
+            indicar com base no ID do colaborador seguido da análise gerada.
             """;
 
 
     // ============================================================
-    // GERAR TESTE (Mantém moldura própria, mas posso padronizar se quiser)
+    // GERAR TESTE
     // ============================================================
     public String gerarConteudoTeste(String tema, int quantidade) throws Exception {
 
@@ -92,7 +92,7 @@ public class GeminiService {
 
 
     // ============================================================
-    // CHAT — agora sempre usa o PROMPT MOLDURA automaticamente
+    // CHAT — sempre usa a moldura
     // ============================================================
     public String conversar(String mensagem) throws Exception {
 
@@ -106,7 +106,7 @@ public class GeminiService {
 
 
     // ============================================================
-    // FUNÇÃO CENTRAL
+    // FUNÇÃO CENTRAL — envia requisição para API Gemini
     // ============================================================
     private String enviarParaGemini(String texto) throws Exception {
 
