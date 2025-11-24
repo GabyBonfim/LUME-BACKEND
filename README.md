@@ -108,11 +108,9 @@ A interface foi pensada para ser **leve, acessível, responsiva e intuitiva**, u
 
 ## 🌐 Links do Projeto
 
-🔗 **Frontend (Vercel):** _adicionar aqui_  
-🔗 **Backend (Render):** _adicionar aqui_  
-🎥 **Vídeo de Demonstração (YouTube):** _adicionar aqui_  
-
-_(Me envie os links e eu coloco aqui formatado!)_
+🔗 **Frontend (Vercel):** _[Lume-frontend](https://lume-frontend-chiq.vercel.app/)_
+🔗 **Backend (Render):** _[Lume-Backend](https://lume-backend-34oq.onrender.com)_  
+🎥 **Vídeo de Demonstração (YouTube):** _[Vídeo Lume](https://youtu.be/EnhWrU0Z5j0?si=l1keTZlzQr9ThoCe))
 
 ---
 
